@@ -12,8 +12,8 @@ const resolvers = {
         info: () => `This is the API of a Hackernews Clone`,
         feed: () => links,
         link: (parent, {id}) => {
-            const linkExists = links.find((link)=>link.id === id);
-            if(!linkExists){
+            const link = links.find((link)=>link.id === id);
+            if(!link){
                 throw new Error('Link not found!');
             }
 
@@ -49,7 +49,6 @@ const resolvers = {
             return link
         }
 
-        
     }
 
    
