@@ -10,7 +10,15 @@ let idCount = links.length
 const resolvers = {
     Query: {
         info: () => `This is the API of a Hackernews Clone`,
-        feed: () => links
+        feed: () => links,
+        link: (parent, {id}) => {
+            const linkExists = links.find((link)=>link.id === id);
+            if(!linkExists){
+                throw new Error('Link not found!');
+            }
+
+            return link;
+        }
     },
 
     Mutation: {
@@ -22,7 +30,26 @@ const resolvers = {
             }
             links.push(link)
             return link
+        }, 
+
+        updateLink:(parent, args)=>{
+            const link = links.find((link) => link.id === args.id)
+            if(!link){
+                throw new Error ('Link not found')
+            }
+
+            if(typeof args.url === 'string'){
+                link.url = args.url
+            }
+
+            if( typeof args.description === 'string'){
+                link.description = args.description
+            }
+
+            return link
         }
+
+        
     }
 
    
