@@ -51,12 +51,14 @@ const resolvers = {
 
         deleteLink: (parent, args) =>{
             const linkIndex = links.findIndex((link)=>link.id === args.id)
-            
+
             if (linkIndex === -1){
                 throw new Error ('Link not found')
             }
-            const link = links.splice(linkIndex,1);
-            return link;
+          const [link] = links.splice(linkIndex,1)
+
+          return link
+
         }
 
     }
