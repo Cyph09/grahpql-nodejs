@@ -1,19 +1,14 @@
 const { GraphQLServer } = require ('graphql-yoga')
 const { PrismaClient }  = require('@prisma/client')
 
-let links = [{
-    id: 'link-0',
-    url: 'www.howtographql.com',
-    description: 'Fullstack tutorial for GraphQL'
-}]
-
-let idCount = links.length
 const resolvers = {
     Query: {
         info: () => `This is the API of a Hackernews Clone`,
-        feed: () => links,
-        link: (parent, {id}) => {
-            const link = links.find((link)=>link.id === id);
+        feed: async (parent, args, context) => {
+            return context.prisma.link.findMany()
+        },
+        link: (parent, {id}, {prisma}) => {
+            const link = prisma.links.find((link)=>link.id === id);
             if(!link){
                 throw new Error('Link not found!');
             }
@@ -23,14 +18,15 @@ const resolvers = {
     },
 
     Mutation: {
-        post: (parent, args) => {
-            const link = {
-                id: `link-${idCount++}`,
-                description: args.description,
-                url: args.url
-            }
-            links.push(link)
-            return link
+        post: (parent, args, {prisma}, info) => {
+            const {url, description} = args;
+            const newLink = prisma.link.create({
+                data: {
+                    url,
+                    description
+                }
+            });
+            return newLink;
         }, 
 
         updateLink:(parent, args)=>{
