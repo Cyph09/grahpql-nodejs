@@ -4,11 +4,15 @@ const { PrismaClient }  = require('@prisma/client')
 const resolvers = {
     Query: {
         info: () => `This is the API of a Hackernews Clone`,
-        feed: async (parent, args, context) => {
-            return context.prisma.link.findMany()
+        feed: async (parent, args, ctx) => {
+            return ctx.prisma.link.findMany()
         },
-        link: (parent, {id}, {prisma}) => {
-            const link = prisma.links.find((link)=>link.id === id);
+        link: async (parent, {id}, {prisma}) => {
+            const link = await prisma.link.findOne({
+                where: {
+                    id
+                }
+            });
             if(!link){
                 throw new Error('Link not found!');
             }
@@ -29,34 +33,34 @@ const resolvers = {
             return newLink;
         }, 
 
-        updateLink:(parent, args)=>{
-            const link = links.find((link) => link.id === args.id)
-            if(!link){
-                throw new Error ('Link not found')
-            }
+        // updateLink:(parent, args, ctx)=>{
+        //     const link = links.find((link) => link.id === args.id)
+        //     if(!link){
+        //         throw new Error ('Link not found')
+        //     }
 
-            if(typeof args.url === 'string'){
-                link.url = args.url
-            }
+        //     if(typeof args.url === 'string'){
+        //         link.url = args.url
+        //     }
 
-            if( typeof args.description === 'string'){
-                link.description = args.description
-            }
+        //     if( typeof args.description === 'string'){
+        //         link.description = args.description
+        //     }
 
-            return link
-        },
+        //     return link
+        // },
 
-        deleteLink: (parent, args) =>{
-            const linkIndex = links.findIndex((link)=>link.id === args.id)
+        // deleteLink: (parent, args) =>{
+        //     const linkIndex = links.findIndex((link)=>link.id === args.id)
 
-            if (linkIndex === -1){
-                throw new Error ('Link not found')
-            }
-          const [link] = links.splice(linkIndex,1)
+        //     if (linkIndex === -1){
+        //         throw new Error ('Link not found')
+        //     }
+        //   const [link] = links.splice(linkIndex,1)
 
-          return link
+        //   return link
 
-        }
+        // }
 
     }
 
