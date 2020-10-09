@@ -1,10 +1,10 @@
-const bcrypt = require('bcryptjs')
+const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const{ APP_SECRET, getUserId} = require('../utils')
 
 async function signup(parent, args, ctx, info){
-    const password = awit bcrypt.hash(args.password, 10)
-    const user = awit ctx.prisma.user.create({data: {...args, password, }})
+    const password = await bcrypt.hash(args.password, 10)
+    const user = await ctx.prisma.user.create({data: {...args, password, }})
     const token = jwt.sign({userId: user.id}, APP_SECRET)
     return{
         token,
@@ -19,10 +19,12 @@ async function login(parent, args, {prisma}, info){
         throw new Error ('No such user found')
     }
 
-    const valid = awit bcrypt.compare(password, user.password)
+    const valid = await bcrypt.compare(password, user.password)
     if(!valid) {
         throw new Error ('Invalid password')
     }
+
+    const token = jwt.sign({userId: user.id}, APP_SECRET)
 
     return {
         token,
@@ -46,7 +48,7 @@ function post(parent, args, ctx, info){
 
  async function updateLink(parent, args, {prisma},info){
             const {id, url, description} = args;
-            const link = await prisma.links.find((link) => link.id === id);
+            const link = await prisma.links.findOne((link) => link.id === id);
             if(!link){
                 throw new Error ('Link not found')
             }
@@ -69,9 +71,8 @@ function post(parent, args, ctx, info){
             if (link === -1){
                 throw new Error ('Link not found')
             }
-          const [link] = prisma.links.splice(link,1)
-
-          return link
+           
+        return prisma.links.splice(link,1)
 
         }
 

@@ -7,6 +7,13 @@ const Link = require('./resolvers/Link')
 
 const prisma = new PrismaClient();
 
+const resolvers = {
+    Query,
+    Mutation,
+    User,
+    Link
+}
+
 const server = new GraphQLServer ({
     typeDefs: './src/schema.graphql',
     resolvers,
