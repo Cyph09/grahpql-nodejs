@@ -43,6 +43,9 @@ function post(parent, args, ctx, info){
             postedBy: { connect: { id: userId}}
         }
     })
+
+    ctx.pubsub.publish("NEW_LINK", newLink)
+
     return newLink;
 }
 
