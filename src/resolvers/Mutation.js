@@ -79,10 +79,38 @@ function post(parent, args, ctx, info){
 
         }
 
+async function vote(parent, args, ctx, info){
+    const userId = getUserId(ctx)
+    const vote = await ctx.prisma.vote.findOne({
+        where: {
+            linkId_userId: {
+                linkId: Number(args.linkId),
+                userId: userId
+            }
+        }
+    })
+
+    if(Boolean(vote)){
+        throw new Error(`Already voted for link: ${args.linkId}`)
+    }
+
+    const newVote = ctx.prisma.vote.create({
+        data:{
+            user: {connect: {id: userId}},
+            link: { connect: {id: Number(args.linkId)}}
+        }
+    })
+
+    ctx.pubsub.publish("NEW_VOTE", newVote)
+
+    return newVote
+}
+
 module.exports = {
     signup,
     login,
     post,
     updateLink,
     deleteLink,
+    vote,
 }
